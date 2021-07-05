@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import * as React from "react";
+import { useMachine } from "@xstate/react";
 
-function App() {
+import { toggleMachine } from "./machine";
+
+export function App() {
+  const [current, send, service] = useMachine(toggleMachine);
+  const active = current.matches("active");
+  const { count } = current.context;
+
+  React.useEffect(() => {
+    service.onStop(() => console.log("stopped"));
+  }, [service]);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h1>XState React Template</h1>
+      <h2>Fork this template!</h2>
+      <button onClick={() => send("TOGGLE")}>
+        Click me ({active ? "✅" : "❌"})
+      </button>{" "}
+      <code>
+        Toggled <strong>{count}</strong> times
+      </code>
     </div>
   );
 }
-
-export default App;
